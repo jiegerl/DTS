@@ -1,0 +1,15 @@
+<Root>
+    <Task_Type>0</Task_Type>
+    <Task_Name>dts</Task_Name>
+    <Task_Path>./</Task_Path>
+
+    <Issue_Time>YYYY-MM-DD HH:MM:SS</Issue_Time>
+    <Start_Time>YYYY-MM-DD HH:MM:SS</Start_Time>
+    <Collect_Time>YYYY-MM-DD HH:MM:SS</Collect_Time>
+    <Stop_Time>YYYY-MM-DD HH:MM:SS</Stop_Time>
+
+    <Page>
+        <Path id="192.168.0.110">/home/task</Path>
+        <Path id="192.168.0.119">/home/task</Path>
+    </Page>
+</Root>
