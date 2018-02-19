@@ -65,7 +65,7 @@ class TaskManager(threading.Thread):
             if buf:
                 file_name, file_size = struct.unpack('128sl', buf)
                 fn = file_name.decode('utf8').strip('\00')
-                new_file_name = os.path.join('./', 'new_' + fn)
+                new_file_name = os.path.join('doc/tasks/', 'new_' + fn)
 
                 data_size = 0
                 fp = open(new_file_name, 'wb')
@@ -83,10 +83,11 @@ class TaskManager(threading.Thread):
             break
 
         t = Task()
+        t.task_id = '0'
         parser = xml.sax.make_parser()
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         parser.setContentHandler(t)
         parser.parse(new_file_name)
 
         self.__separating_queue.put(t)
-        logging.info("submitted task %s from %s\n" % t, addr)
+        logging.info("submitted task %s from %s\n" % (t.task_name, addr))
