@@ -1,17 +1,18 @@
 import json
 import logging
 import threading
-import time
 
 from tiny_spider.base.common import Global
+from tiny_spider.base.decorator import singleton
 from tiny_spider.core.queue_manager import QueueManager
 from tiny_spider.net.tcp_manager import TCPManager
 
 
+@singleton
 class ReqReceiver(threading.Thread):
     def __new__(cls, *args, **kwargs):
         q = QueueManager()
-        cls.__request_queue = q.get(Global.get_req_crawling_type())
+        cls.__request_queue = q.get(Global.get_req_preparing_type())
         return object.__new__(cls)
 
     def __init__(self, node_ip):
@@ -33,4 +34,4 @@ class ReqReceiver(threading.Thread):
             logging.info("received empty request %s" % json_req)
         dict_req = json.loads(json_req.decode('utf8'))
         self.__req_queue.put(dict_req)
-        logging.info("received request %s from %s" % dict_req, addr)
+        logging.info("received request %s from %s" % (dict_req, addr))
