@@ -38,9 +38,8 @@ class ReqDispatcher(threading.Thread):
         dict_req["task_id"] = req.task_id
         dict_req["req_id"] = req.req_id
         dict_req["req_type"] = req.req_type
-        dict_req["req_path"] = req.req_path
         dict_req["urls_count"] = req.urls_count
-        dict_req["urls_set"] = req.urls_set
+        dict_req["urls_args"] = req.urls_args
         json_req = json.dumps(dict_req)
         # node select
         node_queue = NodeManager().node_queue
@@ -48,4 +47,6 @@ class ReqDispatcher(threading.Thread):
         # tcp connect
         s = TCPManager().get_dispatcher_connect(node.node_ip)
         s.send(json_req.encode("utf8"))
-        logging.info("dispatched req %s to %s\n" % req, node)
+        logging.info("dispatched req %s to %s\n" % (req.req_id, node.node_ip))
+        # nodes in turns
+        node_queue.put(node)
