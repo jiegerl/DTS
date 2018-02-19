@@ -1,3 +1,4 @@
+import configparser
 import logging
 import threading
 
@@ -32,15 +33,36 @@ class TaskSeparator(threading.Thread):
 
     def separate_task(self):
         task = self.__separating_queue.get()    # if empty, block here
+        if int(task.task_type) == 0:
+            conf = configparser.ConfigParser()
+            conf.read(task.task_path)
+            from_year = conf.getint('extend', 'from_year')
+            to_year = conf.getint('extend', 'to_year')
+            from_page = conf.getint('extend', 'from_page')
+            to_page = conf.getint('extend', 'to_page')
+            template_url = conf.get('base', 'template_url')
+            logging.info("separating task's year from %s to req %s and its page from %d to %s\n" % (from_year, to_year, from_page, to_page))
 
-        req = Request()
-        req.task_id = task.task_id
-        req.req_id = task.task_id
-        req.req_path = task.task_path
-        req.req_type = task.task_type
-        req.urls_count = 0
-        req.urls_set = list()
-
-        self.__req_dispatching_queue.put(req)
-        self.__task_separated_queue.put(task)
-        logging.info("separated task %s into req %s\n" % task, req)
+            req_count = 0
+            for item in range(from_year, to_year):
+                for ele in range(from_page, to_page, 5):
+                    req = Request()
+                    req.task_id = task.task_id
+                    req.req_id = task.task_id + "_" + str(req_count)
+                    req.req_type = task.task_type
+                    remain_page = to_page - ele
+                    if remain_page < 5:
+                        req.urls_count = remain_page
+                    else:
+                        req.urls_count = 5
+                    dict_args = dict()
+                    dict_args['from_year'] = item
+                    dict_args['to_year'] = item + 1
+                    dict_args['from_page'] = ele
+                    dict_args['to_page'] = ele + req.urls_count
+                    dict_args['template_url'] = template_url
+                    req_count += 1
+                    req.urls_args = dict_args
+                    self.__req_dispatching_queue.put(req)
+                    logging.info("separated task %s into req %s\n" % (task.task_id, req.req_id))
+            self.__task_separated_queue.put(task)
