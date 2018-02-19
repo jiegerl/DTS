@@ -119,7 +119,7 @@ class Task(xml.sax.ContentHandler):
         self.__requests_percent = requests_percent
 
     def startElement(self, tag_name, attrs):
-        pass
+        self.CurrentData = tag_name
 
     def endElement(self, tag_name):
         self.CurrentData = ""
@@ -138,14 +138,13 @@ class Request:
         self.__task_id = None
         self.__req_id = None
         self.__req_type = None
-        self.__req_path = None
 
         self.__time_start = None
         self.__time_stop = None
         self.__time_counter = None
 
         self.__urls_count = None
-        self.__urls_set = None
+        self.__urls_args = None  # dict
 
     @property
     def task_id(self):
@@ -172,12 +171,20 @@ class Request:
         self.__req_type = req_type
 
     @property
-    def req_path(self):
-        return self.__req_path
+    def urls_count(self):
+        return self.__urls_count
 
-    @req_path.setter
-    def req_path(self, req_path):
-        self.__req_path = req_path
+    @urls_count.setter
+    def urls_count(self, urls_count):
+        self.__urls_count = urls_count
+
+    @property
+    def urls_args(self):
+        return self.__urls_args
+
+    @urls_args.setter
+    def urls_args(self, urls_args):
+        self.__urls_args = urls_args
 
 
 class Response:
