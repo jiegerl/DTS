@@ -17,7 +17,6 @@ class TinySpider(object):
 
     def __init__(self):
         self.spider = 'TinySpider'
-        pass
 
     @abstractclassmethod
     def init_sys(self, str_conf_fp):
