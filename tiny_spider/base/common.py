@@ -3,6 +3,7 @@ class Global:
     __task_separated_type_key = "task_separated"
     __req_dispatching_type_key = "req_dispatching"
     __req_dispatched_type_key = "req_dispatched"
+    __req_preparing_type_key = "req_preparing"
     __req_crawling_type_key = "req_crawling"
     __res_crawled_type_key = "res_crawled"
     __msg_received_type_key = 'msg_received'
@@ -27,6 +28,10 @@ class Global:
     @staticmethod
     def get_req_dispatched_type():
         return Global.__req_dispatched_type_key
+
+    @staticmethod
+    def get_req_preparing_type():
+        return Global.__req_preparing_type_key
 
     @staticmethod
     def get_req_crawling_type():
