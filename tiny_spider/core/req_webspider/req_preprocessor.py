@@ -5,6 +5,8 @@ import time
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
 from tiny_spider.core.queue_manager import QueueManager
+from tiny_spider.core.req_webspider.msg_processor import MsgProcessor
+from tiny_spider.model.task import Request
 
 
 @singleton
@@ -26,5 +28,5 @@ class ReqPreprocessor(threading.Thread):
             time.sleep(3)
 
     def prepare_request(self):
-        dict_req = self.__preparing_queue.get()
-        self.__crawling_queue.put(dict_req)
+        obj_req = self.__preparing_queue.get()
+        self.__crawling_queue.put(obj_req)
