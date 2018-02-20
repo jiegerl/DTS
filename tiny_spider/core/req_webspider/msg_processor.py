@@ -10,19 +10,27 @@ class MsgProcessor:
     def __new__(cls, *args, **kwargs):
         return object.__new__(cls)
 
-    def __init__(self, node_ip):
-        self.__node_ip = node_ip
+    def __init__(self):
         self.__s_msg_conn = UDPManager().get_scheduler_msg_connect()
 
-    @property
-    def node_ip(self):
-        return self.__node_ip
-
-    def send_node_msg(self, node_status):
+    def send_comm_msg(self, dict_msg):
         s = self.__s_msg_conn
+        json_res = json.dumps(dict_msg)
+        s.sendto(json_res.encode('utf8'), s.getpeername())
+
+    def send_node_msg(self, obj_node):
         dict_msg = dict()
         dict_msg['message_type'] = Global.get_msg_node()
-        dict_msg['node_ip'] = self.__node_ip
-        dict_msg['node_status'] = node_status
-        json_msg = json.dumps(dict_msg)
-        s.sendto(json_msg.encode('utf8'), s.getpeername())
+        dict_msg['node_ip'] = obj_node.node_ip
+        dict_msg['node_status'] = obj_node.node_status
+        self.send_comm_msg(dict_msg)
+
+    def send_res_msg(self, obj_res):
+        dict_msg = dict()
+        dict_msg['message_type'] = Global.get_msg_res()
+        dict_msg['task_id'] = obj_res.task_id
+        dict_msg['req_id'] = obj_res.req_id
+        dict_msg['req_status'] = obj_res.req_status
+        dict_msg['pages_count'] = obj_res.pages_count
+        dict_msg['pages_args'] = obj_res.pages_args
+        self.send_comm_msg(obj_res)
