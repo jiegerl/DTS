@@ -138,6 +138,7 @@ class Request:
         self.__task_id = None
         self.__req_id = None
         self.__req_type = None
+        self.__req_status = None
 
         self.__time_start = None
         self.__time_stop = None
@@ -171,6 +172,14 @@ class Request:
         self.__req_type = req_type
 
     @property
+    def req_status(self):
+        return self.__req_status
+
+    @req_status.setter
+    def req_status(self, req_status):
+        self.__req_status = req_status
+
+    @property
     def urls_count(self):
         return self.__urls_count
 
@@ -191,14 +200,47 @@ class Response:
     def __init__(self):
         self.__task_id = None
         self.__req_id = None
+        self.__req_status = None
 
         self.__pages_count = None
-        self.__pages_path = None
-        self.__pages_set = None
+        self.__pages_args = None
 
+    @property
+    def task_id(self):
+        return self.__task_id
 
-class Url:
-    def __init__(self):
-        self.__url_type = None
-        self.__url_base = None
-        self.__url_args = None
+    @task_id.setter
+    def task_id(self, task_id):
+        self.__task_id = task_id
+
+    @property
+    def req_id(self):
+        return self.__req_id
+
+    @req_id.setter
+    def req_id(self, req_id):
+        self.__req_id = req_id
+
+    @property
+    def req_status(self):
+        return self.__req_status
+
+    @req_status.setter
+    def req_status(self, req_status):
+        self.__req_status=req_status
+
+    @property
+    def pages_count(self):
+        return self.__pages_count
+
+    @pages_count.setter
+    def pages_count(self, pages_count):
+        self.__pages_count = pages_count
+
+    @property
+    def pages_args(self):
+        return self.__pages_args
+
+    @pages_args.setter
+    def pages_args(self, pages_args):
+        self.__pages_args = pages_args
