@@ -8,6 +8,7 @@ from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
 from tiny_spider.core.node_manager import NodeManager, LocalNode
 from tiny_spider.core.queue_manager import QueueManager
+from tiny_spider.model.node import WebSpiderNode
 from tiny_spider.net.udp_manager import UDPManager
 
 
@@ -15,12 +16,16 @@ from tiny_spider.net.udp_manager import UDPManager
 class MsgProcessor(threading.Thread):
     def __new__(cls):
         q = QueueManager()
-        cls.__node_msg = q.get(Global.get_msg_node())
+        cls.__nd_msg_queue = q.get(Global.get_msg_node())
+        cls.__rs_msg_queue = q.get(Global.get_msg_res())
+        cls.__rq_msg_queue = q.get(Global.get_msg_req())
         return object.__new__(cls)
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.__node_msg_queue = self.__node_msg.queue
+        self.__node_msg_queue = self.__nd_msg_queue.queue
+        self.__res_msg_queue = self.__rs_msg_queue.queue
+        self.__req_msg_queue = self.__rq_msg_queue.queue
 
     def run(self):
         logging.info('message receiver for scheduler started!')
@@ -40,7 +45,11 @@ class MsgProcessor(threading.Thread):
             if msg_type == Global.get_msg_node():
                 self.__node_msg_queue.put(dict_msg)
                 self.process_node_message()
-                logging.info('processed message[%s]' % dict_msg)
+                logging.info('processed node message[%s]' % dict_msg)
+            elif msg_type == Global.get_msg_res():
+                self.__res_msg_queue.put(dict_msg)
+                self.process_res_message()
+                logging.info('processed res message[%s]' % dict_msg)
             else:
                 logging.error('skipped message[%s]' % dict_msg)
             time.sleep(5)
@@ -50,6 +59,9 @@ class MsgProcessor(threading.Thread):
         msg = dict_msg['msg']
         node_ip = msg['node_ip']
         node_status = msg['node_status']
-        node = LocalNode(node_ip, node_status)
+        node = WebSpiderNode(node_ip, node_status)
         nm = NodeManager()
         nm.set(node)
+
+    def process_res_message(self):
+        pass
