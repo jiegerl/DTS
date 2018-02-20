@@ -47,6 +47,15 @@ class ReqDispatcher(threading.Thread):
         # tcp connect
         s = TCPManager().get_dispatcher_connect(node.node_ip)
         s.send(json_req.encode("utf8"))
-        logging.info("dispatched req %s to %s\n" % (req.req_id, node.node_ip))
+        json_ret = s.recv(1024)
+        if not json_ret:
+            logging.info("received empty return data %s" % json_ret)
+        else:
+            dict_ret = json.loads(json_ret.decode('utf8'))
+            if dict_ret['req_status'] == Global.get_req_crawling_type():
+                self.__dispatched_queue.put(req)
+                logging.info("dispatched req %s to %s success\n" % (req.req_id, node.node_ip))
+            else:
+                logging.error("dispatched req %s to %s fail\n" % (req.req_id, node.node_ip))
         # nodes in turns
         node_queue.put(node)
