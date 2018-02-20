@@ -31,15 +31,4 @@ class NodeManager:
         self.__node_set[node_ip] = node
 
 
-class LocalNode:
-    def __init__(self, node_ip, node_status):
-        self.__node_ip = node_ip
-        self.__node_status = node_status
 
-    @property
-    def node_ip(self):
-        return self.__node_ip
-
-    @property
-    def node_status(self):
-        return self.__node_status
