@@ -5,6 +5,7 @@ from tiny_spider.core.req_webspider.req_downloader import ReqDownloader
 from tiny_spider.core.req_webspider.req_preprocessor import ReqPreprocessor
 from tiny_spider.core.req_webspider.req_recevier import ReqReceiver
 from tiny_spider.core.req_webspider.msg_processor import MsgProcessor
+from tiny_spider.model.node import WebSpiderNode
 
 
 @singleton
@@ -24,8 +25,9 @@ class WebSpider:
             cn_logger = Logger('c')
             cn_logger.execute()
 
-            mp = MsgProcessor('127.0.0.1')
-            mp.send_node_msg(Global.get_node_active_status())
+            mp = MsgProcessor()
+            node = WebSpiderNode('127.0.0.1', Global.get_node_active_status())
+            mp.send_node_msg(node)
 
             rp = ReqReceiver('127.0.0.1')
             rp.start()
