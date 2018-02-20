@@ -12,6 +12,7 @@ class Global:
     __node_all_type_key = 'node_all'
     __msg_node_type = 'node_message'
     __msg_req_type = 'req_message'
+    __msg_res_type = 'res_message'
 
     @staticmethod
     def get_task_separating_type():
@@ -60,6 +61,10 @@ class Global:
     @staticmethod
     def get_msg_req():
         return Global.__msg_req_type
+
+    @staticmethod
+    def get_msg_res():
+        return Global.__msg_res_type
 
     @staticmethod
     def get_node_all_type():
