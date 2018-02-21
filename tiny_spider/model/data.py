@@ -6,7 +6,7 @@
 @software: pycharm
 @file: data.py
 @time: 2018/2/21/021 21:33
-@desc:
+@desc: data types of task, request, response and node.
 """
 
 import xml.sax

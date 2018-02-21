@@ -6,7 +6,7 @@
 @software: pycharm
 @file: queue.py
 @time: 2018/2/21/021 22:33
-@desc:
+@desc: queue for task and node
 """
 import queue
 
