@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+@author: Jgirl
+@contact: 841917374@qq.com
+@software: pycharm
+@file: data.py
+@time: 2018/2/21/021 21:33
+@desc:
+"""
+
 import xml.sax
 
 
@@ -10,6 +21,7 @@ class Task(xml.sax.ContentHandler):
         self.__task_name = ""
         self.__task_type = ""
         self.__task_path = ""
+        self.__task_status = ""
 
         self.__time_start = ""
         self.__time_stop = ""
@@ -53,6 +65,14 @@ class Task(xml.sax.ContentHandler):
     @task_path.setter
     def task_path(self, task_path):
         self.__task_path = task_path
+
+    @property
+    def task_status(self):
+        return self.__task_status
+
+    @task_status.setter
+    def task_status(self, task_status):
+        self.__task_status = task_status
 
     @property
     def time_start(self):
@@ -227,7 +247,7 @@ class Response:
 
     @req_status.setter
     def req_status(self, req_status):
-        self.__req_status=req_status
+        self.__req_status = req_status
 
     @property
     def pages_count(self):
@@ -244,3 +264,35 @@ class Response:
     @pages_args.setter
     def pages_args(self, pages_args):
         self.__pages_args = pages_args
+
+
+class LocalNode:
+    def __init__(self, node_ip, node_status):
+        self.__node_ip = node_ip
+        self.__node_status = node_status
+
+    @property
+    def node_ip(self):
+        return self.__node_ip
+
+    @node_ip.setter
+    def node_ip(self, node_ip):
+        self.__node_ip = node_ip
+
+    @property
+    def node_status(self):
+        return self.__node_status
+
+    @node_status.setter
+    def node_status(self, node_status):
+        self.__node_status = node_status
+
+
+class SchedulerNode(LocalNode):
+    def __init__(self, node_ip, node_status):
+        super().__init__(node_ip, node_status)
+
+
+class WebSpiderNode(LocalNode):
+    def __init__(self, node_ip, node_status):
+        super().__init__(node_ip, node_status)
