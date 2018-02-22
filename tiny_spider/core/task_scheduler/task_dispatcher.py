@@ -3,10 +3,10 @@ import threading
 
 import logging
 
+from tiny_spider.core.data_manager import DataManager
 from tiny_spider.net.tcp_manager import TCPManager
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
-from tiny_spider.core.node_manager import NodeManager
 from tiny_spider.core.queue_manager import QueueManager
 
 
@@ -14,17 +14,17 @@ from tiny_spider.core.queue_manager import QueueManager
 class ReqDispatcher(threading.Thread):
     def __new__(cls):
         q = QueueManager()
-        cls.__req_dispatching_queue = q.get(Global.get_req_dispatching_type())
-        cls.__req_dispatched_queue = q.get(Global.get_req_dispatched_type())
+        cls.__req_local_queue = q.get(Global.get_queue_req())
+        cls.__node_local_queue = q.get(Global.get_queue_node())
+        d = DataManager()
+        cls.__data_req_set = d.get(Global.get_data_req())
         return object.__new__(cls)
 
-    def __init__(self, ip="127.0.0.1"):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.__node_ip = ip
-        p = self.__req_dispatching_queue
-        self.__dispatching_queue = p.queue
-        q = self.__req_dispatched_queue
-        self.__dispatched_queue = q.queue
+        self.__req_queue = self.__req_local_queue.queue
+        self.__node_queue = self.__node_local_queue.queue
+        self.__req_set = self.__data_req_set
 
     def run(self):
         logging.info("request dispatcher started!")
@@ -33,7 +33,7 @@ class ReqDispatcher(threading.Thread):
 
     def dispatch_req(self):
         # initial data
-        req = self.__dispatching_queue.get()
+        req = self.__req_queue.get()
         dict_req = dict()
         dict_req["task_id"] = req.task_id
         dict_req["req_id"] = req.req_id
@@ -42,20 +42,24 @@ class ReqDispatcher(threading.Thread):
         dict_req["urls_args"] = req.urls_args
         json_req = json.dumps(dict_req)
         # node select
-        node_queue = NodeManager().node_queue
+        node_queue = self.__node_queue
         node = node_queue.get()
         # tcp connect
         s = TCPManager().get_dispatcher_connect(node.node_ip)
         s.send(json_req.encode("utf8"))
         json_ret = s.recv(1024)
         if not json_ret:
+            # the response from web spider is empty
             logging.info("received empty return data %s" % json_ret)
         else:
+            # process the response from web spider
+            obj_req = self.__req_set[req.req_id]
             dict_ret = json.loads(json_ret.decode('utf8'))
-            if dict_ret['req_status'] == Global.get_req_crawling_type():
-                self.__dispatched_queue.put(req)
+            if dict_ret['req_status'] == Global.get_status_crawling():
+                obj_req.req_status = Global.get_status_uncompleted()
                 logging.info("dispatched req %s to %s success\n" % (req.req_id, node.node_ip))
             else:
                 logging.error("dispatched req %s to %s fail\n" % (req.req_id, node.node_ip))
+                obj_req.req_status = Global.get_status_collecting()
         # nodes in turns
         node_queue.put(node)
