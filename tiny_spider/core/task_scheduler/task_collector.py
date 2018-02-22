@@ -2,6 +2,7 @@ import threading
 
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
+from tiny_spider.core.data_manager import DataManager
 from tiny_spider.core.queue_manager import QueueManager
 
 
@@ -9,14 +10,19 @@ from tiny_spider.core.queue_manager import QueueManager
 class TaskCollector(threading.Thread):
     def __new__(cls):
         q = QueueManager()
-        cls.__task_separating_queue = q.get(Global.get_res_crawled_type())
+        cls.__res_local_queue = q.get(Global.get_queue_res())
+        d = DataManager()
+        cls.__req_data_set = d.get(Global.get_data_req())
         return object.__new__(cls)
 
     def __init__(self):
         threading.Thread.__init__(self)
+        self.__res_queue = self.__res_local_queue.queue
+        self.__req_set = self.__req_data_set
 
     def run(self):
-        pass
+        while True:
+            self.collect_res()
 
     def collect_res(self):
-        pass
+        res = self.__res_queue.get()
