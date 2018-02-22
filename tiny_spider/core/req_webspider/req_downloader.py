@@ -7,14 +7,14 @@ from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
 from tiny_spider.core.queue_manager import QueueManager
 from tiny_spider.core.req_webspider.msg_processor import MsgProcessor
-from tiny_spider.model.task import Response
+from tiny_spider.model.data import Response
 
 
 @singleton
 class ReqDownloader(threading.Thread):
     def __new__(cls, *args, **kwargs):
         q = QueueManager()
-        cls.__request_queue = q.get(Global.get_req_crawling_type())
+        cls.__request_queue = q.get(Global.get_queue_req())
         return object.__new__(cls)
 
     def __init__(self):
@@ -48,7 +48,7 @@ class ReqDownloader(threading.Thread):
         obj_res = Response()
         obj_res.task_id = obj_req.task_id
         obj_res.req_id = obj_req.req_id
-        obj_res.req_status = Global.get_res_crawled_type()
+        obj_res.req_status = Global.get_status_completed()
         obj_res.pages_count = pages_count
         obj_res.pages_args = dict()
         mp = MsgProcessor()
