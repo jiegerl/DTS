@@ -13,12 +13,14 @@ from tiny_spider.model.data import Request
 class ReqPreprocessor(threading.Thread):
     def __new__(cls, *args, **kwargs):
         q = QueueManager()
-        cls.__request_queue = q.get(Global.get_queue_req())
+        cls.__req_msg_queue = q.get(Global.get_msg_req())
+        cls.__req_data_queue = q.get(Global.get_queue_req())
         return object.__new__(cls)
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.__req_queue = self.__request_queue.queue
+        self.__req_m_queue = self.__req_msg_queue.queue
+        self.__req_d_queue = self.__req_data_queue.queue
 
     def run(self):
         while True:
@@ -26,5 +28,7 @@ class ReqPreprocessor(threading.Thread):
             time.sleep(3)
 
     def prepare_request(self):
-        obj_req = self.__req_queue.get()
-        self.__crawling_queue.put(obj_req)
+        dict_req = self.__req_queue.get()
+        obj_req = Request()
+        obj_req.req_id = dict_req
+        self.__req_d_queue.put(obj_req)
