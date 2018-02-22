@@ -1,5 +1,4 @@
 import json
-import time
 import threading
 
 import logging
@@ -19,6 +18,7 @@ class MsgProcessor(threading.Thread):
         cls.__nd_msg_queue = q.get(Global.get_msg_node())
         cls.__rs_msg_queue = q.get(Global.get_msg_res())
         cls.__rq_msg_queue = q.get(Global.get_msg_req())
+        cls.__n_queue = q.get(Global.get_queue_node())
         return object.__new__(cls)
 
     def __init__(self):
@@ -26,6 +26,7 @@ class MsgProcessor(threading.Thread):
         self.__node_msg_queue = self.__nd_msg_queue.queue
         self.__res_msg_queue = self.__rs_msg_queue.queue
         self.__req_msg_queue = self.__rq_msg_queue.queue
+        self.__node_queue = self.__n_queue.queue
 
     def run(self):
         logging.info('message receiver for scheduler started!')
@@ -39,7 +40,7 @@ class MsgProcessor(threading.Thread):
         logging.info('received message[%s]' % json_data.decode('utf8'))
         dict_data = json.loads(json_data.decode('utf8'))
         dict_msg = dict()
-        dict_msg['ip'] = addr
+        dict_msg['ip'] = addr   # sock
         dict_msg['msg'] = dict_data
         msg_type = dict_data['message_type']
         if msg_type == Global.get_msg_node():
@@ -60,7 +61,9 @@ class MsgProcessor(threading.Thread):
         node_status = msg['node_status']
         node = WebSpiderNode(node_ip, node_status)
         nm = DataManager()
-        nm.set(Global.get_data_node(), node)
+        dict_node_set = nm.get(Global.get_data_node())
+        dict_node_set[node.node_ip] = node
+        self.__node_queue.put(node)
 
     def process_res_message(self):
         pass

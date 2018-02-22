@@ -52,18 +52,23 @@ class TaskManager(threading.Thread):
             t.start()
 
     def manage_task(self, sock, addr):
+        logging.info('go to manage task\n')
         data = ''
         while True:
             json_data = sock.recv(1024)
+            logging.info('go to manage task %s\n' % json_data)
             if json_data:
-                data += json_data
-            else:
+                data += json_data.decode('utf8')
+            if len(json_data) < 1024:
                 break
+        logging.info('%s\n' % data)
+
         sock.close()
         dict_data = json.loads(data)
         if 'op_type' not in dict_data.keys():
             logging.error('invalid operation message.\n ')
         else:
+            logging.info('submit task %s\n' % dict_data)
             op_type = dict_data['op_type']
             op_data = dict_data['op_data']
             if op_type == Global.get_op_submit():
@@ -78,25 +83,24 @@ class TaskManager(threading.Thread):
                 logging.error('unknown operation %s\n' % op_type)
         logging.info('received task %s from %s' % (data, addr))
 
-    def submit_task(self, task_path):
+    def submit_task(self, op_data):
         """
         accept task submitted by user using tcp connection
         :param task_path: user's task absolute file path
         :return:
         """
-        file_name = os.path.basename(task_path)
-        file_folder = 'doc/tasks/'
-        new_file_path = os.path.join(file_folder, file_name)
+
+        task_path = op_data['file_path']
         t = Task()
         t.task_id = '0'
         t.task_status = Global.get_status_separating()
         parser = xml.sax.make_parser()
         parser.setFeature(xml.sax.handler.feature_namespaces, 0)
         parser.setContentHandler(t)
-        parser.parse(new_file_path)
+        parser.parse(task_path)
         self.__task_set[t.task_id] = t
         self.__task_queue.put(t)
-        logging.info("submitted task %s from %s\n" % t.task_name)
+        logging.info("submitted task %s\n" % t.task_name)
 
     def cancel_task(self, op_data):
         pass

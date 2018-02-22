@@ -33,7 +33,7 @@ class TaskSeparator(threading.Thread):
             self.separate_task()
 
     def separate_task(self):
-        task = self.__task_queue.get()    # if empty, block here
+        task = self.__task_queue.get()  # if empty, block here
         if int(task.task_type) == 0:
             conf = configparser.ConfigParser()
             conf.read(task.task_path)
@@ -41,8 +41,10 @@ class TaskSeparator(threading.Thread):
             to_year = conf.getint('extend', 'to_year')
             from_page = conf.getint('extend', 'from_page')
             to_page = conf.getint('extend', 'to_page')
-            template_url = conf.get('base', 'template_url')
-            logging.info("separating task's year from %s to req %s and its page from %d to %s\n" % (from_year, to_year, from_page, to_page))
+            # template_url = conf.get('base', 'template_url')
+            template_url = 'http://www.cbooo.cn/Mdata/getMdata_movie?area=50&year=%s&pIndex=%s'
+            logging.info("separating task's year from %s to %s and its page from %d to %s\n" % (
+            from_year, to_year, from_page, to_page))
 
             req_count = 0
             for item in range(from_year, to_year):

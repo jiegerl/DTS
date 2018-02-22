@@ -48,18 +48,19 @@ class ReqDispatcher(threading.Thread):
         s = TCPManager().get_dispatcher_connect(node.node_ip)
         s.send(json_req.encode("utf8"))
         json_ret = s.recv(1024)
+        logging.info("received return data %s\n" % json_ret)
         if not json_ret:
             # the response from web spider is empty
-            logging.info("received empty return data %s" % json_ret)
+            logging.info("received empty return data\n")
         else:
-            # process the response from web spider
+            # handle the response from web spider
             obj_req = self.__req_set[req.req_id]
             dict_ret = json.loads(json_ret.decode('utf8'))
             if dict_ret['req_status'] == Global.get_status_crawling():
-                obj_req.req_status = Global.get_status_uncompleted()
+                obj_req.req_status = Global.get_status_collecting()
                 logging.info("dispatched req %s to %s success\n" % (req.req_id, node.node_ip))
             else:
+                obj_req.req_status = Global.get_status_uncompleted()
                 logging.error("dispatched req %s to %s fail\n" % (req.req_id, node.node_ip))
-                obj_req.req_status = Global.get_status_collecting()
         # nodes in turns
         node_queue.put(node)
