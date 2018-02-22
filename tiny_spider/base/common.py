@@ -13,6 +13,11 @@ class Global:
     __data_task = 'task_data'
     __data_req = 'req_data'
     __data_res = 'res_data'
+    # operation of task
+    __op_submit = 'submitted'
+    __op_cancel = 'canceled'
+    __op_pause = 'paused'
+    __op_resume = 'resumed'
     # status of task
     __status_separating = 'separating'      # being separating
     __status_dispatching = 'dispatching'    # being dispatching
@@ -99,3 +104,19 @@ class Global:
     @staticmethod
     def get_queue_res():
         return Global.__queue_res
+
+    @staticmethod
+    def get_op_submit():
+        return Global.__op_submit
+
+    @staticmethod
+    def get_op_cancel():
+        return Global.__op_cancel
+
+    @staticmethod
+    def get_op_pause():
+        return Global.__op_pause
+
+    @staticmethod
+    def get_op_resume():
+        return Global.__op_resume
