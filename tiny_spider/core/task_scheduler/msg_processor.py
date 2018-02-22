@@ -6,9 +6,9 @@ import logging
 
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
-from tiny_spider.core.node_manager import NodeManager, LocalNode
+from tiny_spider.core.data_manager import DataManager
 from tiny_spider.core.queue_manager import QueueManager
-from tiny_spider.model.node import WebSpiderNode
+from tiny_spider.model.data import WebSpiderNode
 from tiny_spider.net.udp_manager import UDPManager
 
 
@@ -30,29 +30,28 @@ class MsgProcessor(threading.Thread):
     def run(self):
         logging.info('message receiver for scheduler started!')
         s = UDPManager().set_scheduler_msg_connect()
-        t = threading.Thread(target=self.receive_message, args=(s,))
-        t.start()
-
-    def receive_message(self, sock):
         while True:
-            json_data, addr = sock.recvfrom(1024)
-            logging.info('received message[%s]' % json_data.decode('utf8'))
-            dict_data = json.loads(json_data.decode('utf8'))
-            dict_msg = dict()
-            dict_msg['ip'] = addr
-            dict_msg['msg'] = dict_data
-            msg_type = dict_data['message_type']
-            if msg_type == Global.get_msg_node():
-                self.__node_msg_queue.put(dict_msg)
-                self.process_node_message()
-                logging.info('processed node message[%s]' % dict_msg)
-            elif msg_type == Global.get_msg_res():
-                self.__res_msg_queue.put(dict_msg)
-                self.process_res_message()
-                logging.info('processed res message[%s]' % dict_msg)
-            else:
-                logging.error('skipped message[%s]' % dict_msg)
-            time.sleep(5)
+            json_data, addr = s.recvfrom(1024)
+            t = threading.Thread(target=self.receive_message, args=(json_data, addr))
+            t.start()
+
+    def receive_message(self, json_data, addr):
+        logging.info('received message[%s]' % json_data.decode('utf8'))
+        dict_data = json.loads(json_data.decode('utf8'))
+        dict_msg = dict()
+        dict_msg['ip'] = addr
+        dict_msg['msg'] = dict_data
+        msg_type = dict_data['message_type']
+        if msg_type == Global.get_msg_node():
+            self.__node_msg_queue.put(dict_msg)
+            self.process_node_message()
+            logging.info('processed node message[%s]' % dict_msg)
+        elif msg_type == Global.get_msg_res():
+            self.__res_msg_queue.put(dict_msg)
+            self.process_res_message()
+            logging.info('processed res message[%s]' % dict_msg)
+        else:
+            logging.error('skipped message[%s]' % dict_msg)
 
     def process_node_message(self):
         dict_msg = self.__node_msg_queue.get()
@@ -60,8 +59,8 @@ class MsgProcessor(threading.Thread):
         node_ip = msg['node_ip']
         node_status = msg['node_status']
         node = WebSpiderNode(node_ip, node_status)
-        nm = NodeManager()
-        nm.set(node)
+        nm = DataManager()
+        nm.set(Global.get_data_node(), node)
 
     def process_res_message(self):
         pass
