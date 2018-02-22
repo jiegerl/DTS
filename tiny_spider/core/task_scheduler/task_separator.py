@@ -4,27 +4,28 @@ import threading
 
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
+from tiny_spider.core.data_manager import DataManager
 from tiny_spider.core.queue_manager import QueueManager
-from tiny_spider.model.task import Request
+from tiny_spider.model.data import Request
 
 
 @singleton
 class TaskSeparator(threading.Thread):
     def __new__(cls):
         q = QueueManager()
-        cls.__task_separating_queue = q.get(Global.get_task_separating_type())
-        cls.__task_separated_queue = q.get(Global.get_task_separated_type())
-        cls.__req_dispatching_queue = q.get(Global.get_req_dispatching_type())
+        cls.__task_local_queue = q.get(Global.get_queue_task())
+        cls.__req_local_queue = q.get(Global.get_queue_req())
+        d = DataManager()
+        cls.__data_task_set = d.get(Global.get_data_task())
+        cls.__data_req_set = d.get(Global.get_data_req())
         return object.__new__(cls)
 
     def __init__(self):
         threading.Thread.__init__(self)
-        q = self.__task_separating_queue.queue
-        self.__separating_queue = q
-        p = self.__task_separated_queue.queue
-        self.__task_separated_queue = p
-        t = self.__req_dispatching_queue.queue
-        self.__req_dispatching_queue = t
+        self.__task_queue = self.__task_local_queue.queue
+        self.__req_queue = self.__req_local_queue.queue
+        self.__task_set = self.__data_task_set
+        self.__req_set = self.__data_req_set
 
     def run(self):
         logging.info("task separator started!")
@@ -32,7 +33,7 @@ class TaskSeparator(threading.Thread):
             self.separate_task()
 
     def separate_task(self):
-        task = self.__separating_queue.get()    # if empty, block here
+        task = self.__task_queue.get()    # if empty, block here
         if int(task.task_type) == 0:
             conf = configparser.ConfigParser()
             conf.read(task.task_path)
@@ -63,6 +64,9 @@ class TaskSeparator(threading.Thread):
                     dict_args['template_url'] = template_url
                     req_count += 1
                     req.urls_args = dict_args
-                    self.__req_dispatching_queue.put(req)
+                    req.req_status = Global.get_status_dispatching()
+                    self.__req_queue.put(req)
+                    self.__req_set[req.req_id] = req
                     logging.info("separated task %s into req %s\n" % (task.task_id, req.req_id))
-            self.__task_separated_queue.put(task)
+
+            self.__task_set[task.task_id].task_status = Global.get_status_dispatching()
