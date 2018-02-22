@@ -24,7 +24,7 @@ class DataManager:
     def __init__(self):
         pass
 
-    def get(self, data_type, data_id):
+    def get(self, data_type):
         if data_type == Global.get_data_task():
             dict_data = self.__data_task_set
         elif data_type == Global.get_data_req():
@@ -35,26 +35,4 @@ class DataManager:
             dict_data = self.__data_node_set
         else:
             return None
-
-        if data_id in dict_data.keys():
-            return dict_data[data_id]
-        else:
-            return None
-
-    def set(self, data_type, data_obj):
-        if data_type == Global.get_data_task():
-            dict_data = self.__data_task_set
-            data_id = data_obj.task_id
-        elif data_type == Global.get_data_req():
-            dict_data = self.__data_req_set
-            data_id = data_obj.req_id
-        elif data_type == Global.get_data_res():
-            dict_data = self.__data_res_set
-            data_id = data_obj.req_id
-        elif data_type == Global.get_data_node():
-            dict_data = self.__data_node_set
-            data_id = data_obj.node_ip
-        else:
-            return -1
-        dict_data[data_id] = data_obj
-        return 0
+        return dict_data
