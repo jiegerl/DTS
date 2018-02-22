@@ -15,11 +15,12 @@ class TaskProcessor:
         TaskProcessor.process_task(op_type, op_data)
 
         :param op_type: submit, cancel, pause or resume
-        :param op_data: data of operation
+        :param op_data: dict data of operation
         :return: 0 if process successfully. -1 represents error, otherwise.
         """
         if op_type == Global.get_op_submit():
             dict_op_msg = TaskProcessor.submit_task(op_data)
+            logging.info('submit task %s\n' % dict_op_msg)
         else:
             # except submitting task
             if 'task_id' not in op_data.keys():
@@ -34,6 +35,7 @@ class TaskProcessor:
             else:
                 logging.error('unknown operation: %s\n' % op_type)
                 return -1
+
         if dict_op_msg is not None:
             dict_op_msg['op_type'] = op_type
             s = TCPManager().get_cmd_connect()
@@ -58,34 +60,39 @@ class TaskProcessor:
 
     @staticmethod
     def submit_task(op_data):
-        if 'file_path' in op_data.keys():
+        if 'file_path' not in op_data.keys():
             return None
         file_path = op_data['file_path']
         if not os.path.isfile(file_path):
             return None
         if os.path.getsize(file_path) == 0:
             return None
-        fp = open(file_path, 'w')
-        file_data = fp.read()
         dict_op_msg = dict()
-        dict_op_msg['op_data'] = file_data
-        fp.close()
+        dict_op_data = dict()
+        dict_op_data['file_path'] = file_path
+        dict_op_msg['op_data'] = dict_op_data
         return dict_op_msg
 
     @staticmethod
     def cancel_task(task_id):
         dict_op_msg = dict()
-        dict_op_msg['op_data'] = task_id
+        dict_op_data = dict()
+        dict_op_data['task_id'] = task_id
+        dict_op_msg['op_data'] = dict_op_data
         return dict_op_msg
 
     @staticmethod
     def pause_task(task_id):
         dict_op_msg = dict()
-        dict_op_msg['op_data'] = task_id
+        dict_op_data = dict()
+        dict_op_data['task_id'] = task_id
+        dict_op_msg['op_data'] = dict_op_data
         return dict_op_msg
 
     @staticmethod
     def resume_task(task_id):
         dict_op_msg = dict()
-        dict_op_msg['op_data'] = task_id
+        dict_op_data = dict()
+        dict_op_data['task_id'] = task_id
+        dict_op_msg['op_data'] = dict_op_data
         return dict_op_msg

@@ -1,6 +1,7 @@
 import getopt
 import sys
 
+from tiny_spider.base.common import Global
 from tiny_spider.core.opt_processor.task_processor import TaskProcessor
 from tiny_spider.core.scheduler import Scheduler
 from tiny_spider.core.webspider import WebSpider
@@ -13,7 +14,6 @@ class CmdProcessor:
     def process_cmd(self):
         try:
             opts, args = getopt.getopt(self.__argv, "hs:c:p:r:n:")
-
         except getopt.GetoptError:
             print('unknown args!')
             sys.exit(2)
@@ -28,16 +28,24 @@ class CmdProcessor:
                 sys.exit(0)
             elif opt == "-s":  # submit
                 task_file_path = arg
-                TaskProcessor.submit_task(task_file_path)
+                dict_data = dict()
+                dict_data['file_path'] = task_file_path
+                TaskProcessor.process_task(Global.get_op_submit(), dict_data)
             elif opt == '-p':  # pause
                 task_id = arg
-                TaskProcessor.pause_task(task_id)
-            elif opt == '-c':  # cancle
+                dict_data = dict()
+                dict_data['task_id'] = task_id
+                TaskProcessor.process_task(Global.get_op_cancel(), dict_data)
+            elif opt == '-c':  # cancel
                 task_id = arg
-                TaskProcessor.cancel_task(task_id)
+                dict_data = dict()
+                dict_data['task_id'] = task_id
+                TaskProcessor.process_task(Global.get_op_cancel(), dict_data)
             elif opt == '-r':  # resume
                 task_id = arg
-                TaskProcessor.resume_task(task_id)
+                dict_data = dict()
+                dict_data['task_id'] = task_id
+                TaskProcessor.process_task(Global.get_op_resume(), dict_data)
             elif opt == '-n':
                 node_type = arg
                 if node_type == 's':
