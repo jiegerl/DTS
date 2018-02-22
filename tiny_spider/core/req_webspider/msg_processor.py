@@ -17,6 +17,8 @@ class MsgProcessor:
         s = self.__s_msg_conn
         json_res = json.dumps(dict_msg)
         s.sendto(json_res.encode('utf8'), s.getpeername())
+        s.close()
+        return 0
 
     def send_node_msg(self, obj_node):
         dict_msg = dict()
@@ -24,6 +26,7 @@ class MsgProcessor:
         dict_msg['node_ip'] = obj_node.node_ip
         dict_msg['node_status'] = obj_node.node_status
         self.send_comm_msg(dict_msg)
+        return 0
 
     def send_res_msg(self, obj_res):
         dict_msg = dict()
@@ -34,3 +37,4 @@ class MsgProcessor:
         dict_msg['pages_count'] = obj_res.pages_count
         dict_msg['pages_args'] = obj_res.pages_args
         self.send_comm_msg(obj_res)
+        return 0
