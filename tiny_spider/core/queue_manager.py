@@ -12,7 +12,7 @@
 
 from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
-from tiny_spider.model.queue import TaskQueue, ReqQueue, ResQueue, NodeQueue
+from tiny_spider.model.queue import TaskQueue, ReqQueue, ResQueue, NodeQueue, MsgQueue
 
 
 @singleton
@@ -30,10 +30,16 @@ class QueueManager:
                 q = TaskQueue()
             elif queue_type == Global.get_queue_req():
                 q = ReqQueue()
-            elif queue_type == Global.get_data_res():
+            elif queue_type == Global.get_queue_res():
                 q = ResQueue()
             elif queue_type == Global.get_queue_node():
                 q = NodeQueue()
+            elif queue_type == Global.get_msg_node():
+                q = MsgQueue()
+            elif queue_type == Global.get_msg_req():
+                q = MsgQueue()
+            elif queue_type == Global.get_msg_res():
+                q = MsgQueue()
             else:
                 return None
             self.__queue_set[queue_type] = q
