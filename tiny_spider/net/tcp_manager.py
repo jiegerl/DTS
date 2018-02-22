@@ -18,14 +18,14 @@ class TCPManager:
         s.connect((ip, self.__dispatch_port))
         return s
 
-    def set_cmd_submitter_connect(self):
+    def set_cmd_connect(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((self.__schedule_ip, self.__submit_port))
         s.listen(5)
         return s
 
-    def get_cmd_submitter_connect(self):
+    def get_cmd_connect(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.__schedule_ip, self.__submit_port))
         return s
