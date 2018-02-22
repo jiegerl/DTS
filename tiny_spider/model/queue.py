@@ -44,3 +44,8 @@ class ResQueue(LocalQueue):
 class NodeQueue(LocalQueue):
     def __init__(self):
         super().__init__()
+
+
+class MsgQueue(LocalQueue):
+    def __init__(self):
+        super().__init__()
