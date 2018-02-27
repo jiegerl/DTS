@@ -7,7 +7,7 @@ from tiny_spider.base.common import Global
 from tiny_spider.base.decorator import singleton
 from tiny_spider.core.data_manager import DataManager
 from tiny_spider.core.queue_manager import QueueManager
-from tiny_spider.model.data import WebSpiderNode
+from tiny_spider.model.data import WebSpiderNode, Response
 from tiny_spider.net.udp_manager import UDPManager
 
 
@@ -19,6 +19,9 @@ class MsgProcessor(threading.Thread):
         cls.__rs_msg_queue = q.get(Global.get_msg_res())
         cls.__rq_msg_queue = q.get(Global.get_msg_req())
         cls.__n_queue = q.get(Global.get_queue_node())
+        cls.__res_local_queue = q.get(Global.get_queue_res())
+        d = DataManager()
+        cls.__data_res_set = d.get(Global.get_data_req())
         return object.__new__(cls)
 
     def __init__(self):
@@ -27,6 +30,8 @@ class MsgProcessor(threading.Thread):
         self.__res_msg_queue = self.__rs_msg_queue.queue
         self.__req_msg_queue = self.__rq_msg_queue.queue
         self.__node_queue = self.__n_queue.queue
+        self.__res_queue = self.__res_local_queue.queue
+        self.__res_set = self.__data_res_set
 
     def run(self):
         logging.info('message receiver for scheduler started!')
@@ -66,4 +71,13 @@ class MsgProcessor(threading.Thread):
         self.__node_queue.put(node)
 
     def process_res_message(self):
-        pass
+        dict_msg = self.__res_msg_queue.get()
+        msg = dict_msg['msg']
+        obj_res = Response()
+        obj_res.task_id = msg['task_id']
+        obj_res.req_id = msg['req_id']
+        obj_res.req_id = msg['req_status']
+        obj_res.pages_count = msg['pages_count']
+        obj_res.pages_args = msg['pages_args']
+        self.__res_queue.put(obj_res)
+        self.__res_set[obj_res.req_id] = obj_res
