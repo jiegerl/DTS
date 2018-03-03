@@ -32,5 +32,5 @@ class Configure:
         return self.__message_port
 
     @message_port.setter
-    def reduce_port(self, message_port):
+    def message_port(self, message_port):
         self.__message_port = message_port
