@@ -1,36 +1,62 @@
-class Configure:
-    _instance = None
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+@author: Jgirl
+@contact: 841917374@qq.com
+@software: pycharm
+@file: conf.py
+@time: 2018/3/5/005 22:00
+@desc:
+"""
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Configure, cls).__new__(cls)
-        return cls._instance
+
+class Configure:
 
     def __init__(self):
-        self.__dispatch_port = 9999
-        self.__reduce_port = 9998
-        self.__message_port = 9997
+
+        self.__sdl_ip = None
+
+        self.__dsp_port = None
+        self.__msg_port = None
+        self.__rdc_port = None
+        self.__cmd_port = None
 
     @property
-    def dispatch_port(self):
-        return self.__dispatch_port
+    def sdl_ip(self):
+        return self.__sdl_ip
 
-    @dispatch_port.setter
-    def dispatch_port(self, dispatch_port):
-        self.__dispatch_port = dispatch_port
-
-    @property
-    def reduce_port(self):
-        return self.__reduce_port
-
-    @reduce_port.setter
-    def reduce_port(self, reduce_port):
-        self.__reduce_port = reduce_port
+    @sdl_ip.setter
+    def sdl_ip(self, sdl_ip):
+        self.__sdl_ip = sdl_ip
 
     @property
-    def message_port(self):
-        return self.__message_port
+    def dsp_port(self):
+        return self.__dsp_port
 
-    @message_port.setter
-    def message_port(self, message_port):
-        self.__message_port = message_port
+    @dsp_port.setter
+    def dsp_port(self, dsp_port):
+        self.__dsp_port = dsp_port
+
+    @property
+    def msg_port(self):
+        return self.__msg_port
+
+    @msg_port.setter
+    def msg_port(self, msg_port):
+        self.__msg_port = msg_port
+
+    @property
+    def rdc_port(self):
+        return self.__rdc_port
+
+    @rdc_port.setter
+    def rdc_port(self, rdc_port):
+        self.__rdc_port = rdc_port
+
+    @property
+    def cmd_port(self):
+        return self.__cmd_port
+
+    @cmd_port.setter
+    def cmd_port(self, cmd_port):
+        self.__cmd_port = cmd_port
