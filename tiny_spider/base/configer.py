@@ -1,19 +1,22 @@
 import configparser
 
+import os
+
 from tiny_spider.base.decorator import singleton
 from tiny_spider.model.conf import Configure
+from tiny_spider.utils.path_manager import PathUtils
 
 
 @singleton
 class Configer:
-    def __new__(cls, conf_path):
-        cls.__conf_path = conf_path
-        cls.__conf_obj = Configure()
+    def __new__(cls):
         return object.__new__(cls)
 
-    @property
-    def conf_path(self):
-        return self.__conf_path
+    def __init__(self):
+        pu = PathUtils(os.getcwd())
+        conf_path = pu.conf_path
+        self.__conf_path = conf_path
+        self.__conf_obj = Configure()
 
     @property
     def conf_obj(self):
