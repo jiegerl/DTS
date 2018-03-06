@@ -6,6 +6,14 @@ def singleton(cls):
 
     @functools.wraps(cls.__new__)
     def singleton_new(cls, *args, **kwargs):
+        """
+            if '__it__' exists, it implies that object has been created.
+            And the value of '__it__' is the very object that created first.
+        :param cls: the class
+        :param args:
+        :param kwargs:
+        :return:
+        """
         it = cls.__dict__.get('__it__')
         if it is not None:
             return it
