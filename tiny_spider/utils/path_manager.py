@@ -4,23 +4,14 @@ from tiny_spider.base.decorator import singleton
 
 
 @singleton
-class PathManager:
-    def __new__(cls, root_path):
-        return object.__new__(cls, root_path)
+class PathUtils:
+    def __new__(cls):
+        return object.__new__(cls)
 
-    def __init__(self, root_path):
-        self.__root_path = root_path
-        self.__conf_path = os.path.join(root_path,'/conf')
-        self.__doc_path = os.path.join(root_path,'/doc')
-        self.__log_path = os.path.join(root_path,'/logs')
-
-    @property
-    def root_path(self):
-        return self.__root_path
-
-    @root_path.setter
-    def root_path(self, root_path):
-        self.__root_path = root_path
+    def __init__(self):
+        self.__conf_path = os.path.join('..', 'conf', 'config.ini')
+        self.__docs_path = os.path.join('..', 'docs')
+        self.__logs_path = os.path.join('..', 'logs')
 
     @property
     def conf_path(self):
@@ -31,17 +22,17 @@ class PathManager:
         self.__conf_path = conf_path
 
     @property
-    def doc_path(self):
-        return self.__doc_path
+    def docs_path(self):
+        return self.__docs_path
 
-    @doc_path.setter
-    def doc_path(self, doc_path):
-        self.__doc_path = doc_path
+    @docs_path.setter
+    def docs_path(self, docs_path):
+        self.__docs_path = docs_path
 
     @property
-    def log_path(self):
-        return self.__log_path
+    def logs_path(self):
+        return self.__logs_path
 
-    @log_path.setter
-    def log_path(self, log_path):
-        self.__log_path = log_path
+    @logs_path.setter
+    def logs_path(self, logs_path):
+        self.__logs_path = logs_path
