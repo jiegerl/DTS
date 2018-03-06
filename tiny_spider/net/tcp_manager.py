@@ -1,10 +1,8 @@
 import socket
 
-import os
 
 from tiny_spider.base.configer import Configer
 from tiny_spider.base.decorator import singleton
-from tiny_spider.utils.path_manager import PathUtils
 
 
 @singleton
@@ -40,3 +38,4 @@ class TCPManager:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.__sdl_ip, self.__cmd_port))
         return s
+
